@@ -17,11 +17,11 @@ export default function Cart() {
     const total = items.reduce((sum, item) => {
       return sum + item.price * item.quantity;
     }, 0);
-    return total;
+    return Math.floor(total);
   }
 
   const handleUpdate = (type, product) => {
-    dispatch(updateQuantity({ type, cartProduct: product }));
+    dispatch(updateQuantity({ type, product }));
   };
 
   return (
@@ -50,7 +50,7 @@ export default function Cart() {
                 {items.map((product) => (
                   <tr key={product.id} className="text-zinc-600 text-sm">
                     <td className=" px-4 py-2">{product.id}</td>
-                    <td className=" px-4 py-2">{product.name}</td>
+                    <td className=" px-4 py-2">{product.title}</td>
                     <td className=" px-4 py-2">{product.price}</td>
                     <td className=" px-4 py-2">
                       <span>{product.quantity}</span>
@@ -64,11 +64,11 @@ export default function Cart() {
                       </button>
                       <button
                         className={`px-2 py-1 font-semibold text-3xl text-green-800  ${
-                          product.stock === 0
+                          product.rating.count === 0
                             ? " opacity-40 cursor-not-allowed"
                             : ""
                         }`}
-                        disabled={product.stock === 0}
+                        disabled={product.rating.count === 0}
                         onClick={() => handleUpdate("+", product)}
                       >
                         +
@@ -81,7 +81,7 @@ export default function Cart() {
                       </button>
                     </td>
                     <td className=" px-4 py-2">
-                      {product.price * product.quantity}
+                      {Math.floor(product.price * product.quantity)}
                     </td>
                   </tr>
                 ))}

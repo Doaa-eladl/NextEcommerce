@@ -1,13 +1,33 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { addToCart } from "./cartSlice";
+import { addToCart, updateQuantity } from "./cartSlice";
 
-// Thunk for fetching products
+// --- LocalStorage Helpers ---
+const PRODUCTS_KEY = "products";
+
+const loadProducts = () => {
+  try {
+    const data = localStorage.getItem(PRODUCTS_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveProducts = (products) => {
+  localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+};
+
+// --- Thunk for fetching products ---
 export const fetchProducts = createAsyncThunk(
   "products/fetchProducts",
   async () => {
-    const res = await fetch("http://localhost:4000/products", {
-      next: { revalidate: 0 },
-    });
+    const local = loadProducts();
+    if (local && local.length > 0) {
+      return local; // ✅ keep stock from localStorage
+    }
+
+    // fetch only if no local products
+    const res = await fetch("https://fakestoreapi.com/products");
 
     if (!res.ok) {
       throw new Error(
@@ -15,20 +35,33 @@ export const fetchProducts = createAsyncThunk(
       );
     }
 
-    return await res.json();
+    const data = await res.json();
+
+    // initialize with stock if needed
+    const productsWithStock = data.map((p) => ({
+      ...p,
+      rating: {
+        ...p.rating,
+        count: p.rating?.count ?? 10, // ensure count exists
+      },
+    }));
+
+    saveProducts(productsWithStock);
+    return productsWithStock;
   }
 );
 
 const productSlice = createSlice({
   name: "products",
   initialState: {
-    products: [],
+    products: loadProducts(),
     loading: true,
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
+      // --- fetchProducts ---
       .addCase(fetchProducts.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -41,13 +74,31 @@ const productSlice = createSlice({
         state.loading = false;
         state.error = action.error.message;
       })
-      // Listen for cart updates
+      // --- When item added to cart, update stock + save products ---
       .addCase(addToCart.fulfilled, (state, action) => {
-        const item = action.payload;
-        const product = state.products.find((p) => p.id === item.id);
-        if (product) {
-          product.stock -= 1; // 🔥 instantly decrease stock in products state
+        const addedCart = action.payload; // full updated cart
+        const lastAdded = addedCart[addedCart.length - 1]; // last added item
+
+        if (!lastAdded) return;
+
+        const product = state.products.find((p) => p.id === lastAdded.id);
+        if (product && product.rating.count > 0) {
+          product.rating.count -= 1;
+          saveProducts(state.products); // save updated products list
         }
+      })
+      // --- Update quantity fulfilled ---
+      .addCase(updateQuantity.fulfilled, (state, action) => {
+        if (action.meta.arg.type === "+") {
+          state.products[action.meta.arg.product.id - 1].rating.count--;
+        } else if (action.meta.arg.type === "-") {
+          state.products[action.meta.arg.product.id - 1].rating.count++;
+        } else if (action.meta.arg.type === "remove") {
+          state.products[action.meta.arg.product.id - 1].rating.count +=
+            action.meta.arg.product.quantity;
+        }
+
+        saveProducts(state.products);
       });
   },
 });

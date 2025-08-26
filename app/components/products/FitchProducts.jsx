@@ -27,7 +27,7 @@ export default function FitchProducts() {
     // Step 1: Always start by filtering the **full products list**
     const term = searchName.toLowerCase();
     const afterFilter = products.filter((product) =>
-      product.name.toLowerCase().includes(term)
+      product.title.toLowerCase().includes(term)
     );
     let result = afterFilter;
     // Step 2: Then sort the filtered list (if sorting was selected)
@@ -72,15 +72,15 @@ export default function FitchProducts() {
                 className="border border-gray-300 p-3 rounded-lg flex flex-col justify-between items-center"
               >
                 <Image
-                  src={product.img}
-                  alt={product.name}
+                  src={product.image}
+                  alt={product.description}
                   width={280}
                   height={400}
                   unoptimized
                   className="mb-4 p-2 h-52"
                 />
-                <h3 className="flex justify-between mb-3 w-full">
-                  {product.name}
+                <h3 className="font-bold flex justify-between mb-3 w-full">
+                  {product.title}
                 </h3>
                 <p className="text-gray-600 mb-3">{product.description}</p>
                 <div className="flex justify-between mb-3 w-full">
@@ -89,16 +89,18 @@ export default function FitchProducts() {
                   </p>
                   <p
                     className={`flex justify-center items-center ${
-                      product.stock === 0
+                      product.rating.count === 0
                         ? "text-red-600 line-through"
                         : "text-gray-700"
                     }`}
                   >
-                    {product.stock}
+                    {product.rating.count}
                     <span
-                      className={`ml-1 product.stock === 0
-                    ? "text-red-500"
-                    : "text-gray-700"
+                      className={`ml-1 ${
+                        product.rating.count === 0
+                          ? "text-red-500"
+                          : "text-gray-700"
+                      }
                 }`}
                     >
                       in stock
@@ -106,11 +108,11 @@ export default function FitchProducts() {
                   </p>
                 </div>
                 <button
-                  disabled={product.stock === 0}
+                  disabled={product.rating.count === 0}
                   className={`
                 w-full rounded py-2 font-semibold text-white
                 ${
-                  product.stock === 0
+                  product.rating.count === 0
                     ? "bg-[#55154059] cursor-not-allowed"
                     : "bg-[#551540de]"
                 }
