@@ -71,22 +71,6 @@
         "chunks": [],
         "async": false
       }
-    },
-    "(app-client)/./app/cart/page.jsx": {
-      "*": {
-        "id": "(sc_client)/./app/cart/page.jsx",
-        "name": "*",
-        "chunks": [],
-        "async": false
-      }
-    },
-    "(app-client)/./app/bill/page.jsx": {
-      "*": {
-        "id": "(sc_client)/./app/bill/page.jsx",
-        "name": "*",
-        "chunks": [],
-        "async": false
-      }
     }
   },
   "edgeSSRModuleMapping": {},
@@ -226,30 +210,12 @@
         "app/layout:static/chunks/app/layout.js"
       ],
       "async": false
-    },
-    "/home/doaa/Downloads/nextEcommerce/app/cart/page.jsx": {
-      "id": "(app-client)/./app/cart/page.jsx",
-      "name": "*",
-      "chunks": [
-        "app/cart/page:static/chunks/app/cart/page.js"
-      ],
-      "async": false
-    },
-    "/home/doaa/Downloads/nextEcommerce/app/bill/page.jsx": {
-      "id": "(app-client)/./app/bill/page.jsx",
-      "name": "*",
-      "chunks": [
-        "app/bill/page:static/chunks/app/bill/page.js"
-      ],
-      "async": false
     }
   },
   "entryCSSFiles": {
     "/home/doaa/Downloads/nextEcommerce/app/page": [],
     "/home/doaa/Downloads/nextEcommerce/app/layout": [
       "static/css/app/layout.css"
-    ],
-    "/home/doaa/Downloads/nextEcommerce/app/cart/page": [],
-    "/home/doaa/Downloads/nextEcommerce/app/bill/page": []
+    ]
   }
 }

@@ -52,6 +52,7 @@ export default function FitchProducts() {
         width={1480}
         height={800}
         className="mt-5"
+        unoptimized
       />
       <FilterForm
         searchName={searchName}
